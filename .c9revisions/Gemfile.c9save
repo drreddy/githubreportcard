@@ -1,0 +1,2 @@
+{"ts":1374228031234,"silentsave":true,"restoring":false,"patch":[[{"diffs":[[1,"source 'http://rubygems.org'\n\ngem 'thin'\ngem 'faye'\n"]],"start1":0,"start2":0,"length1":0,"length2":52}]],"length":52}
+{"contributors":[],"silentsave":false,"ts":1374228058889,"patch":[[{"diffs":[[0,"g'\n\n"],[-1,"gem 'thin'\ngem 'faye'"],[1,"ruby '2.0.0'\n\ngem 'rails', '3.2.12'\n\ngem 'thin'\ngem 'faye'\n\ngroup :production do\n  gem 'pg'\nend"],[0,"\n"]],"start1":26,"start2":26,"length1":26,"length2":100}]],"length":126,"saved":false}

@@ -1,1 +1,1 @@
-FAYE_TOKEN = "anything"
+FAYE_TOKEN = "buzzlightyear"

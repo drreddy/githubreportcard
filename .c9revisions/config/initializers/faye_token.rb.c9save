@@ -1,3 +1,0 @@
-{"ts":1374251501192,"silentsave":true,"restoring":false,"patch":[[{"diffs":[[1,"FAYE_TOKEN = \"anything\""]],"start1":0,"start2":0,"length1":0,"length2":23}]],"length":23}
-{"contributors":[],"silentsave":false,"ts":1374251484228,"patch":[[{"diffs":[[0," = \""],[-1,"anything"],[1,"mindmeld"],[0,"\""]],"start1":10,"start2":10,"length1":13,"length2":13}]],"length":23,"saved":false}
-{"ts":1374251515210,"patch":[[{"diffs":[[0," = \""],[-1,"mindmeld"],[1,"buzzlightyear"],[0,"\""]],"start1":10,"start2":10,"length1":13,"length2":18}]],"length":28,"saved":false}

@@ -1,74 +1,154 @@
-  <div id="w">
-<h1>Github Report Card Webapp</h1>
-<p>Enter a single Github username below and get the summary of his profile.</p>
+<div id="w">
+    <h1>Github Report Card Webapp</h1>
+    <p>Enter a single Github username below and get the summary of his profile.</p>
 
-<input type="text" name="ghusername" id="ghusername" placeholder="Github username...">
+    <input type="text" name="ghusername" id="ghusername" placeholder="Github username...">
 
-<a href="#" id="ghsubmitbtn">Get Summary</a>
+    <a href="#" id="ghsubmitbtn">Get Summary</a>
 
-<div id="ghapidata" class="clearfix"></div>
+    <div id="ghapidata" class="clearfix"></div>
 </div>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="http://cdn.oesmith.co.uk/morris-0.4.1.min.js"></script>
 <script type="text/javascript">
 $(function(){
   $('#ghsubmitbtn').on('click', function(e){
-    e.preventDefault();
-    $('#ghapidata').html('<div id="loader"><img src="images/loader.gif" alt="loading..."></div>');
+    e.preventDefault();    
+    var username = $('#ghusername').val();  
+
+    if (username == "" || username == " "){
+
+    }
+    else{
+    	$('#ghapidata').html('<div id="loader"><img src="images/loader.gif" alt="loading..."></div>');
+
+    	$.ajax({
+    		type: 'POST',
+    		dataType: 'json',
+    		url: '/',
+    		data: {'user_name': username},
+    		success: function(data){
+
+                //console.log(data.chart_data);
+                //console.log(data.languages);
+
+                $('#ghusername').val("");
+
+    			if (data.status == "ok"){
+                    //alert('data received');
+                    //alert(data.user.name);
+                    var fullname   = data.user.name, 
+                        username   = data.user.login,
+                        aviurl     = data.user.avatar_url,
+                        profileurl = data.user.html_url,
+                        location   = data.user.location,
+                        followersnum = data.user.followers,
+                        followingnum = data.user.following,
+                        reposnum     = data.user.public_repos,
+                        personalreposnum     = data.user.personal_repos_num,
+                        forkedreposnum = data.user.forked_repos_num;
+        
+                    if(fullname == undefined) { fullname = username; }
+        
+                    var outhtml = '<div id="language-chart" style="width:200px; height:200px; float:right; "></div><h2>'+fullname+' <span class="smallname">(@<a href="'+profileurl+'" target="_blank">'+username+'</a>)</span></h2>';
+                    outhtml = outhtml + '<div class="ghcontent"><div class="avi"><a href="'+profileurl+'" target="_blank"><img src="'+aviurl+'" height="150" alt="'+username+'"></a></div>';
+                    outhtml = outhtml + '<p>Followers: '+followersnum+'<br/>Following: '+followingnum+'<br>Repos: '+reposnum+'</p></div>';
+                    outhtml = outhtml + '<div class="repolist clearfix">';
+
+                    if (reposnum == 0){
+
+                        outhtml = outhtml + '<p>No repos!</p>';
+
+                    }else{
+
+                        outhtml = outhtml + '<p style="width:100%; float:left;"><strong>Repos List:</strong></p>';
+
+                        if (personalreposnum !=0) {
+
+                            outhtml = outhtml + '<p style="width:100%; float:left;"><strong>Self Developed - '+ personalreposnum +':</strong></p><ul>';
+
+                            $.each(data.personal_repos, function(index) {
+                                outhtml = outhtml + '<li><a href="'+data.personal_repos[index].html_url+'" target="_blank">'+data.personal_repos[index].name + '</a></li>';
+                            }); 
+
+                            outhtml = outhtml + '</ul>'
+                        }
+
+                        if (forkedreposnum !=0) {
+
+                            outhtml = outhtml + '<p style="width:100%; float:left;"><strong>Forked - '+ forkedreposnum +':</strong></p><ul>';
+
+                            $.each(data.forked_repos, function(index) {
+                                outhtml = outhtml + '<li><a href="'+data.forked_repos[index].html_url+'" target="_blank">'+data.forked_repos[index].name + '</a></li>';
+                            }); 
+
+                            outhtml = outhtml + '</ul>'
+                        }
+
+                    }
+
+                    outhtml = outhtml + '</div>';
+
+                    $('#ghapidata').html(outhtml);
+
+                    Morris.Donut({
+                      element: 'language-chart',
+                      data: data.chart_data,
+                      colors:[
+                        '#0b62a4',
+                        '#2371ad',
+                        '#3b81b6',
+                        '#5491bf',
+                        '#6ca0c8',
+                        '#85b0d1',
+                        '#9dc0da',
+                        '#b5cfe3',
+                        '#cedfec',
+                        '#e6eff5'
+                      ],
+                      formatter: function (x) { return x +" bytes"; }
+                    });
+
+                    /*
+        
+                    var forked = '<ul>';
+                    var personal = '<ul>';
+        
+                    if(data.repos.length == 0){
+                        outhtml = outhtml + '<p>No repos!</p>';
+                    }
+                    else{
+                        outhtml = outhtml + '<p style="width:100%; float:left;"><strong>Repos List:</strong></p>';
+        
+                        $.each(data.repos, function(index) {
+                            if (data.repos[index].fork){
+                                forked = forked + '<li><a href="'+data.repos[index].html_url+'" target="_blank">'+data.repos[index].name + '</a></li>';
+                                forked_flag += 1;
+                            }
+                            else{
+                                personal = personal + '<li><a href="'+data.repos[index].html_url+'" target="_blank">'+data.repos[index].name + '</a></li>';
+                                personal_flag += 1
+                            }
+                        }); 
+        
+                        if (personal_flag != 0){
+                        outhtml = outhtml + '<p style="width:100%; float:left;"><strong>Self Developed - '+ personal_flag +':</strong></p>' + personal + '</ul>';
+                        }
+        
+                        if (forked_flag != 0){
+                            outhtml = outhtml + '<p style="width:100%; float:left;"><strong>Forked - '+ forked_flag +':</strong></p>' + forked + '</ul>';
+                        }
+                    }
+        
+                    outhtml = outhtml + '</div>';
     
-    var username = $('#ghusername').val();
-    var requri   = 'https://api.github.com/users/'+username;
-    var repouri  = 'https://api.github.com/users/'+username+'/repos';
-    
-    requestJSON(requri, function(json) {
-      if(json.message == "Not Found" || username == '') {
-        $('#ghapidata').html("<h2>No User Info Found</h2>");
-      }
-      
-      else {
-        // else we have a user and we display their info
-        var fullname   = json.name;
-        var username   = json.login;
-        var aviurl     = json.avatar_url;
-        var profileurl = json.html_url;
-        var location   = json.location;
-        var followersnum = json.followers;
-        var followingnum = json.following;
-        var reposnum     = json.public_repos;
-        
-        if(fullname == undefined) { fullname = username; }
-        
-        var outhtml = '<h2>'+fullname+' <span class="smallname">(@<a href="'+profileurl+'" target="_blank">'+username+'</a>)</span></h2>';
-        outhtml = outhtml + '<div class="ghcontent"><div class="avi"><a href="'+profileurl+'" target="_blank"><img src="'+aviurl+'" width="80" height="80" alt="'+username+'"></a></div>';
-        outhtml = outhtml + '<p>Followers: '+followersnum+' - Following: '+followingnum+'<br>Repos: '+reposnum+'</p></div>';
-        outhtml = outhtml + '<div class="repolist clearfix">';
-        
-        var repositories;
-        $.getJSON(repouri, function(json){
-          repositories = json;   
-          outputPageContent();                
-        });          
-        
-        function outputPageContent() {
-          if(repositories.length == 0) { outhtml = outhtml + '<p>No repos!</p></div>'; }
-          else {
-            outhtml = outhtml + '<p><strong>Repos List:</strong></p> <ul>';
-            $.each(repositories, function(index) {
-              outhtml = outhtml + '<li><a href="'+repositories[index].html_url+'" target="_blank">'+repositories[index].name + '</a></li>';
-            });
-            outhtml = outhtml + '</ul></div>'; 
-          }
-          $('#ghapidata').html(outhtml);
-        } // end outputPageContent()
-      } // end else statement
-    }); // end requestJSON Ajax call
-  }); // end click event handler
-  
-  function requestJSON(url, callback) {
-    $.ajax({
-      url: url,
-      complete: function(xhr) {
-        callback.call(null, xhr.responseJSON);
-      }
-    });
-  }
+                    $('#ghapidata').html(outhtml);*/
+                }else{
+                    $('#ghapidata').html("<center><h2>No User Info Found</h2></center>");
+                }
+            }
+    	});
+    };
+  });
 });
 </script>

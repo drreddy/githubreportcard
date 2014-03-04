@@ -4,7 +4,7 @@ class HomeController < ApplicationController
   		require 'open-uri'
   		require 'json'
 
-  		proxy = "http://10.3.100.211:8080"
+  		proxy = ""
 
 		base_url = "https://api.github.com"
 
